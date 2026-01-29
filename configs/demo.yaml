@@ -1,0 +1,3 @@
+task: toy_math
+reward: exact_match
+episodes: 20
