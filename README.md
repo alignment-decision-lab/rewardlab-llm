@@ -30,7 +30,7 @@ The goal is not to build another RLHF pipeline, but a **laboratory for objective
 ## Architecture Overview
 
 <p align="center">
-  <img src="docs/figures/general-schema.png" width="800">
+  <img src="docs/figures/general-schema-new.png" width="800">
 </p>
 
 The framework decomposes training into five independent layers:
