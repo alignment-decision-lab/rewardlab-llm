@@ -1,31 +1,147 @@
-# rewardlab-llm
+# REWARD-Lab
 
-Research toolkit for studying **reward and objective design** in LLM-based decision-making.
+**Comparing Reward Objectives for Fine-Tuning**
 
-## What this is
-- A research tool to compare reward structures under controlled settings.
-- Focused on analysis, ablations, and modeling choices.
+REWARD-Lab is a research toolkit for studying reward and objective design in LLM-based decision-making.
+
+It is designed for controlled experiments where **tasks, models, and optimizers are fixed**, and only the **supervision signal and training objective** are varied.
+
+---
+
+## Motivation
+
+Modern alignment methods often mix:
+
+- task design  
+- reward modeling  
+- optimization algorithms  
+- evaluation metrics  
+
+REWARD-Lab separates these components explicitly to enable:
+
+- objective-level ablations  
+- robustness analysis under noisy or uncertain feedback  
+- systematic comparison of training losses (scalar, pairwise, DPO-style, surrogate objectives)  
+
+The goal is not to build another RLHF pipeline, but a **laboratory for objective design**.
+
+---
+
+## Architecture Overview
 
 <p align="center">
-  <img src="docs/figures/general-schema.png" alt="SHIFT-Lab overview" width="700">
+  <img src="docs/figures/general-schema.png" width="800">
 </p>
 
-**REWARD-Lab** is a research framework for **systematically comparing training objectives for decision and generation models** under controlled conditions.
+The framework decomposes training into five independent layers:
 
-The core idea is to **isolate the role of the reward or objective function** by keeping tasks, models, and optimization settings fixed, and varying only the form of supervision used during training. Supervision signals are treated in a general way: they may come from **human feedback, other models acting as judges, hand-crafted reward functions**, or any programmable criterion, not only preference-based losses.
+### 1. Tasks & Feedback Sources
+- Toy environments (e.g., `toy_math`)
+- Human feedback
+- Model-as-judge
+- Handcrafted reward functions
 
-REWARD-Lab provides:
+### 2. Judges
+Produce a standardized `FeedbackSignal`.
 
-- a collection of **toy and synthetic tasks** designed to make objective-level effects observable,
+Examples:
+- `DataJudge`
+- `NoisyJudge` (uncertainty injection)
+- Custom rule-based or model-based judges
 
-- a modular library of **reward and objective formulations** (scalar rewards, pairwise preferences, DPO-style and surrogate objectives),
+### 3. Objectives
+Convert supervision into a training loss.
 
-- a standardized **training and evaluation loop** that ensures fair comparisons,
+Examples:
+- `scalar_eval`
+- `pairwise_dpo`
+- custom surrogate objectives
 
-- and an analysis layer to study **stability, agreement across signals, and failure modes such as over-optimization or reward hacking**.
+### 4. Training Loop
+Fixed model & optimizer.  
+Objectives are swapped without changing the training loop.
 
+### 5. Evaluation & Analysis
+- Accuracy  
+- Stability  
+- Agreement across signals  
+- Over-optimization / reward hacking detection  
 
-## Quickstart
-```bash
+---
+
+## Design Principles
+
+REWARD-Lab enforces strict separation of concerns:
+
+| Component | Responsibility |
+|-----------|---------------|
+| Task | Defines data/environment |
+| Judge | Produces supervision signal |
+| FeedbackSignal | Unified supervision container |
+| Objective | Computes loss from supervision |
+| Runner | Orchestrates experiment |
+
+New ideas can be added as **plugins** without modifying core code.
+
+---
+
+## Project Structure
+```
+src/rewardlab/
+tasks/
+judges/
+objectives/
+core/
+eval/
+cli.py
+configs/
+docs/
+```
+
+Modules are selected via YAML configuration.
+
+---
+
+## Example Configuration
+
+```yaml
+task:
+  name: toy_math
+  params: {}
+
+judge:
+  name: data_judge
+  params:
+    field: answer
+
+objective:
+  name: scalar_eval
+  params: {}
+
+run:
+  episodes: 20
+
+```
+Switching to a noisy judge:
+
+```yaml
+judge:
+  name: noisy_judge
+  params:
+    flip_prob: 0.2
+    seed: 0
+    base:
+      name: data_judge
+      params:
+        field: answer
+
+```
+
+No changes to the training loop are required.
+
+```
 pip install -e .
 python -m rewardlab.cli run --config configs/demo.yaml
+```
+
+

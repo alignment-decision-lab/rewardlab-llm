@@ -1,6 +1,9 @@
 import random
 from rewardlab.core.types import Step, Trajectory
 
+from rewardlab.core.registry import TASKS
+@TASKS.register("toy_math")
+
 class ToyMathTask:
     name = "toy_math"
 
