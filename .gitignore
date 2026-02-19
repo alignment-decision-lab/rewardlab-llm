@@ -1,0 +1,61 @@
+# =========================
+# Python bytecode
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Virtual environments
+# =========================
+.env/
+.venv/
+venv/
+ENV/
+env/
+
+# =========================
+# Build / packaging
+# =========================
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Experiment outputs
+# =========================
+runs/
+outputs/
+checkpoints/
+wandb/
+tensorboard/
+
+# =========================
+# IDE / editors
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+
+*.egg-info/
+.python-version
