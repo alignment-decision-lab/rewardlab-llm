@@ -1,3 +1,27 @@
-task: toy_math
-reward: exact_match
-episodes: 20
+task:
+  name: toy_math
+  params: {}
+
+judge:
+  name: noisy_judge
+  params:
+    flip_prob: 0.2
+    seed: 0
+    base:
+      name: data_judge
+      params:
+        field: answer
+
+# judge:
+#   name: data_judge
+#   params:
+#     field: answer
+
+objective:
+  name: scalar_eval
+  params: {}
+
+run:
+  episodes: 20
+
+
